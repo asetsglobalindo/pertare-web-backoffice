@@ -177,8 +177,8 @@ const formSchema = z.object({
   sustainability_commitment_ceo_image_en: z.string().array().optional().default([]),
   sustainability_commitment_ceo_image_id: z.string().array().optional().default([]),
   sustainability_commitment_ceo_quote: z.object({
-    en: z.string().max(1000).optional(),
-    id: z.string().max(1000).optional(),
+    en: z.string().max(2000).optional(),
+    id: z.string().max(2000).optional(),
   }).optional(),
   active_status: z.boolean().default(true),
   type: z.string().default(CONTENT_TYPE.CSR),
@@ -1590,7 +1590,7 @@ const CSRPage = () => {
                         >
                           CEO Quote (EN)
                         </label>
-                        <div className="ceo-quote-editor">
+                        <div className="ceo-quote-editor min-h-[300px]">
                           <Ckeditor5
                             onBlur={field.onBlur}
                             ref={field.ref}
@@ -1604,6 +1604,9 @@ const CSRPage = () => {
                             {error?.message}
                           </p>
                         ) : null}
+                        <div className="text-xs text-gray-500 mt-1">
+                          Maximum 2000 characters. Editor supports formatting like bold, italic, and line breaks.
+                        </div>
                       </div>
                     )}
                   />
@@ -1618,7 +1621,7 @@ const CSRPage = () => {
                         >
                           Kutipan CEO (ID)
                         </label>
-                        <div className="ceo-quote-editor">
+                        <div className="ceo-quote-editor min-h-[300px]">
                           <Ckeditor5
                             onBlur={field.onBlur}
                             ref={field.ref}
@@ -1632,6 +1635,9 @@ const CSRPage = () => {
                             {error?.message}
                           </p>
                         ) : null}
+                        <div className="text-xs text-gray-500 mt-1">
+                          Maksimal 2000 karakter. Editor mendukung formatting seperti bold, italic, dan line breaks.
+                        </div>
                       </div>
                     )}
                   />
