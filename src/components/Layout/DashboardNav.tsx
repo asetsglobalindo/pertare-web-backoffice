@@ -14,17 +14,24 @@ import PageServices from "@/services/page";
 import { toast } from "react-toastify";
 import ToastBody from "../ToastBody";
 import { PageMenuItemType } from "@/types/page";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../ui/tooltip";
 // import BasePageNav from "../../assets/json/base_page.json";
 
 interface DashboardNavProps {
   setOpen?: Dispatch<SetStateAction<boolean>>;
+  isMinimized?: boolean;
 }
 
 interface PageMenuItemExtendedType extends PageMenuItemType {
   total_order: number;
 }
 
-export function DashboardNav({ setOpen }: DashboardNavProps) {
+export function DashboardNav({ setOpen, isMinimized = false }: DashboardNavProps) {
   const userStore = useUserStore();
   const location = useLocation();
   const [defaultValue, setDefaultValue] = useState("");
@@ -120,6 +127,56 @@ export function DashboardNav({ setOpen }: DashboardNavProps) {
   //   return;
   // }
 
+  // If minimized, show compact icon-only view
+  if (isMinimized) {
+    return (
+      <TooltipProvider>
+        <nav className="grid items-start gap-2">
+          {(userStore.development ? data : userStore.route_menu)?.map((parent) => (
+            <div key={parent.label} className="space-y-1">
+              {/* Group separator with parent initial */}
+              <div className="flex items-center justify-center w-full py-2">
+                <div className="w-8 h-8 rounded-md bg-muted flex items-center justify-center">
+                  <span className="text-xs font-bold text-muted-foreground">
+                    {parent.label.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+              </div>
+              
+              {parent.items.map((item) => (
+                <Tooltip key={item._id}>
+                  <TooltipTrigger asChild>
+                    <Link
+                      to={item.to}
+                      onClick={() => {
+                        if (setOpen) setOpen(false);
+                      }}
+                      className={cn(
+                        "flex items-center justify-center w-full h-9 rounded-md text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors",
+                        "/dashboard/" + location.pathname.split("/")[2] === item.to
+                          ? "bg-accent font-semibold text-accent-foreground"
+                          : "font-normal"
+                      )}
+                    >
+                      <Circle size={4} />
+                    </Link>
+                  </TooltipTrigger>
+                  <TooltipContent side="right" className="ml-2">
+                    <div className="flex flex-col">
+                      <p className="text-xs font-medium">{item.label}</p>
+                      <p className="text-xs text-muted-foreground">{parent.label}</p>
+                    </div>
+                  </TooltipContent>
+                </Tooltip>
+              ))}
+            </div>
+          ))}
+        </nav>
+      </TooltipProvider>
+    );
+  }
+
+  // Default expanded view
   return (
     <nav className="grid items-start gap-2 ">
       <Accordion
