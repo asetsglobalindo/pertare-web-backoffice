@@ -161,6 +161,25 @@ const formSchema = z.object({
     en: z.string({ required_error: "Field required" }).min(1),
     id: z.string({ required_error: "Field required" }).min(1),
   }),
+  // Sustainability Commitment Fields
+  sustainability_commitment_title: z.object({
+    en: z.string().max(100).optional(),
+    id: z.string().max(100).optional(),
+  }).optional(),
+  sustainability_commitment_ceo_name: z.object({
+    en: z.string().max(80).optional(),
+    id: z.string().max(80).optional(),
+  }).optional(),
+  sustainability_commitment_ceo_position: z.object({
+    en: z.string().max(120).optional(),
+    id: z.string().max(120).optional(),
+  }).optional(),
+  sustainability_commitment_ceo_image_en: z.string().array().optional().default([]),
+  sustainability_commitment_ceo_image_id: z.string().array().optional().default([]),
+  sustainability_commitment_ceo_quote: z.object({
+    en: z.string().max(1000).optional(),
+    id: z.string().max(1000).optional(),
+  }).optional(),
   active_status: z.boolean().default(true),
   type: z.string().default(CONTENT_TYPE.CSR),
   order: z.number().default(0),
@@ -194,6 +213,13 @@ type Payload = Omit<DataFormValue, "body"> & {
       }[]
     | [];
   thumbnail_images:
+    | {
+        id: string;
+        en: string;
+      }[]
+    | [];
+  // Sustainability Commitment Image
+  sustainability_commitment_ceo_image:
     | {
         id: string;
         en: string;
@@ -323,6 +349,12 @@ const CSRPage = () => {
         data.thumbnail_images_en,
         data.thumbnail_images_id
       );
+      
+      // Handle sustainability commitment CEO image
+      const sustainability_commitment_ceo_image = combineImageMultiLang(
+        data.sustainability_commitment_ceo_image_en || [],
+        data.sustainability_commitment_ceo_image_id || []
+      );
 
       mutate({
         ...data,
@@ -334,6 +366,7 @@ const CSRPage = () => {
         type: CONTENT_TYPE.CSR,
         thumbnail_images2,
         thumbnail_images,
+        sustainability_commitment_ceo_image,
       });
 
       // mutate();
@@ -478,6 +511,26 @@ const CSRPage = () => {
             //   en: result.description.en,
             //   id: result.description.id,
             // },
+            
+            // Sustainability Commitment Fields
+            sustainability_commitment_title: {
+              en: result?.sustainability_commitment_title?.en || "Sustainability Commitment",
+              id: result?.sustainability_commitment_title?.id || "Komitmen Keberlanjutan",
+            },
+            sustainability_commitment_ceo_name: {
+              en: result?.sustainability_commitment_ceo_name?.en || "Zibali Hisbul Masih",
+              id: result?.sustainability_commitment_ceo_name?.id || "Zibali Hisbul Masih",
+            },
+            sustainability_commitment_ceo_position: {
+              en: result?.sustainability_commitment_ceo_position?.en || "President Director PT Pertamina Retail",
+              id: result?.sustainability_commitment_ceo_position?.id || "Direktur Utama PT Pertamina Retail",
+            },
+            sustainability_commitment_ceo_image_en: result?.sustainability_commitment_ceo_image?.map((img) => img.en._id) || [],
+            sustainability_commitment_ceo_image_id: result?.sustainability_commitment_ceo_image?.map((img) => img.id._id) || [],
+            sustainability_commitment_ceo_quote: {
+              en: result?.sustainability_commitment_ceo_quote?.en || "",
+              id: result?.sustainability_commitment_ceo_quote?.id || "",
+            },
 
             order: 1,
           });
@@ -1296,6 +1349,292 @@ const CSRPage = () => {
                   >
                     Add Fields
                   </Button>
+                </div>
+              </section>
+
+              {/* Sustainability Commitment Section */}
+              <section className="sustainability-commitment-section p-4 space-y-6 border">
+                <h4 className="pb-2 text-lg font-medium border-b border-primary/10">
+                  Sustainability Commitment Section
+                </h4>
+                <div className="bg-muted p-3 rounded-md">
+                  <p className="text-sm text-muted-foreground">
+                    Bagian ini khusus untuk menampilkan komitmen keberlanjutan perusahaan dengan kutipan dari CEO
+                  </p>
+                </div>
+
+                {/* Sustainability Commitment Title */}
+                <div className="field-row">
+                  <Controller
+                    control={form.control}
+                    name="sustainability_commitment_title.en"
+                    render={({ field, fieldState: { error } }) => (
+                      <div className="flex flex-col space-y-2">
+                        <label
+                          htmlFor={field.name}
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          Sustainability Commitment Title (EN)
+                        </label>
+                        <Input
+                          id={field.name}
+                          ref={field.ref}
+                          type="text"
+                          placeholder="Enter sustainability commitment title"
+                          disabled={isLoading}
+                          value={field.value || ""}
+                          onChange={(e) => field.onChange(e.target.value)}
+                          maxLength={100}
+                        />
+                        {error?.message ? (
+                          <p className="text-xs font-medium text-destructive">
+                            {error?.message}
+                          </p>
+                        ) : null}
+                      </div>
+                    )}
+                  />
+                  <Controller
+                    control={form.control}
+                    name="sustainability_commitment_title.id"
+                    render={({ field, fieldState: { error } }) => (
+                      <div className="flex flex-col space-y-2">
+                        <label
+                          htmlFor={field.name}
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          Judul Komitmen Keberlanjutan (ID)
+                        </label>
+                        <Input
+                          id={field.name}
+                          ref={field.ref}
+                          type="text"
+                          placeholder="Masukkan judul komitmen keberlanjutan"
+                          disabled={isLoading}
+                          value={field.value || ""}
+                          onChange={(e) => field.onChange(e.target.value)}
+                          maxLength={100}
+                        />
+                        {error?.message ? (
+                          <p className="text-xs font-medium text-destructive">
+                            {error?.message}
+                          </p>
+                        ) : null}
+                      </div>
+                    )}
+                  />
+                </div>
+
+                {/* CEO Name and Position */}
+                <div className="field-row two-column grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="col-left space-y-4">
+                    <Controller
+                      control={form.control}
+                      name="sustainability_commitment_ceo_name.en"
+                      render={({ field, fieldState: { error } }) => (
+                        <div className="flex flex-col space-y-2">
+                          <label
+                            htmlFor={field.name}
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          >
+                            CEO Name (EN)
+                          </label>
+                          <Input
+                            id={field.name}
+                            ref={field.ref}
+                            type="text"
+                            placeholder="Enter CEO name"
+                            disabled={isLoading}
+                            value={field.value || ""}
+                            onChange={(e) => field.onChange(e.target.value)}
+                            maxLength={80}
+                          />
+                          {error?.message ? (
+                            <p className="text-xs font-medium text-destructive">
+                              {error?.message}
+                            </p>
+                          ) : null}
+                        </div>
+                      )}
+                    />
+                    <Controller
+                      control={form.control}
+                      name="sustainability_commitment_ceo_name.id"
+                      render={({ field, fieldState: { error } }) => (
+                        <div className="flex flex-col space-y-2">
+                          <label
+                            htmlFor={field.name}
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          >
+                            Nama CEO (ID)
+                          </label>
+                          <Input
+                            id={field.name}
+                            ref={field.ref}
+                            type="text"
+                            placeholder="Masukkan nama CEO"
+                            disabled={isLoading}
+                            value={field.value || ""}
+                            onChange={(e) => field.onChange(e.target.value)}
+                            maxLength={80}
+                          />
+                          {error?.message ? (
+                            <p className="text-xs font-medium text-destructive">
+                              {error?.message}
+                            </p>
+                          ) : null}
+                        </div>
+                      )}
+                    />
+                  </div>
+
+                  <div className="col-right space-y-4">
+                    <Controller
+                      control={form.control}
+                      name="sustainability_commitment_ceo_position.en"
+                      render={({ field, fieldState: { error } }) => (
+                        <div className="flex flex-col space-y-2">
+                          <label
+                            htmlFor={field.name}
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          >
+                            CEO Position (EN)
+                          </label>
+                          <Input
+                            id={field.name}
+                            ref={field.ref}
+                            type="text"
+                            placeholder="Enter CEO position"
+                            disabled={isLoading}
+                            value={field.value || ""}
+                            onChange={(e) => field.onChange(e.target.value)}
+                            maxLength={120}
+                          />
+                          {error?.message ? (
+                            <p className="text-xs font-medium text-destructive">
+                              {error?.message}
+                            </p>
+                          ) : null}
+                        </div>
+                      )}
+                    />
+                    <Controller
+                      control={form.control}
+                      name="sustainability_commitment_ceo_position.id"
+                      render={({ field, fieldState: { error } }) => (
+                        <div className="flex flex-col space-y-2">
+                          <label
+                            htmlFor={field.name}
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          >
+                            Jabatan CEO (ID)
+                          </label>
+                          <Input
+                            id={field.name}
+                            ref={field.ref}
+                            type="text"
+                            placeholder="Masukkan jabatan CEO"
+                            disabled={isLoading}
+                            value={field.value || ""}
+                            onChange={(e) => field.onChange(e.target.value)}
+                            maxLength={120}
+                          />
+                          {error?.message ? (
+                            <p className="text-xs font-medium text-destructive">
+                              {error?.message}
+                            </p>
+                          ) : null}
+                        </div>
+                      )}
+                    />
+                  </div>
+                </div>
+
+                {/* CEO Image */}
+                <div className="field-row">
+                  <Controller
+                    control={form.control}
+                    name={"sustainability_commitment_ceo_image_en"}
+                    render={({ field }) => {
+                      return (
+                        <ImageRepository
+                          label="CEO Photo (EN)"
+                          limit={1}
+                          mobileSize={false}
+                          img_type={IMG_TYPE.CSR_PAGE}
+                          value={field.value?.length ? field.value : []}
+                          onChange={(data) => {
+                            let value = data.map((img) => img._id);
+                            form.setValue("sustainability_commitment_ceo_image_id", value);
+                            field.onChange(value);
+                          }}
+                        />
+                      );
+                    }}
+                  />
+                  <div className="mt-2 text-xs text-gray-500">
+                    Upload foto CEO dengan rasio 1:1, ukuran maksimal 5MB. Format yang didukung: JPG, PNG, WebP
+                  </div>
+                </div>
+
+                {/* CEO Quote */}
+                <div className="field-row">
+                  <Controller
+                    control={form.control}
+                    name="sustainability_commitment_ceo_quote.en"
+                    render={({ field, fieldState: { error } }) => (
+                      <div className="flex flex-col space-y-2">
+                        <label
+                          htmlFor={field.name}
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          CEO Quote (EN)
+                        </label>
+                        <div className="ceo-quote-editor">
+                          <Ckeditor5
+                            onBlur={field.onBlur}
+                            ref={field.ref}
+                            placeholder="Enter CEO quote or statement about sustainability commitment..."
+                            value={field.value || ""}
+                            onChange={(e) => field.onChange(e)}
+                          />
+                        </div>
+                        {error?.message ? (
+                          <p className="text-xs font-medium text-destructive">
+                            {error?.message}
+                          </p>
+                        ) : null}
+                      </div>
+                    )}
+                  />
+                  <Controller
+                    control={form.control}
+                    name="sustainability_commitment_ceo_quote.id"
+                    render={({ field, fieldState: { error } }) => (
+                      <div className="flex flex-col space-y-2">
+                        <label
+                          htmlFor={field.name}
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          Kutipan CEO (ID)
+                        </label>
+                        <div className="ceo-quote-editor">
+                          <Ckeditor5
+                            onBlur={field.onBlur}
+                            ref={field.ref}
+                            placeholder="Masukkan kutipan atau pernyataan CEO tentang komitmen keberlanjutan..."
+                            value={field.value || ""}
+                            onChange={(e) => field.onChange(e)}
+                          />
+                        </div>
+                        {error?.message ? (
+                          <p className="text-xs font-medium text-destructive">
+                            {error?.message}
+                          </p>
+                        ) : null}
+                      </div>
+                    )}
+                  />
                 </div>
               </section>
             </TabsContent>

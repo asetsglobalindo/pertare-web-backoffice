@@ -153,6 +153,29 @@ export interface ContentType {
         en: ContentImage;
       }[]
     | [];
+  // Sustainability Commitment Fields
+  sustainability_commitment_title?: {
+    en: string;
+    id: string;
+  };
+  sustainability_commitment_ceo_name?: {
+    en: string;
+    id: string;
+  };
+  sustainability_commitment_ceo_position?: {
+    en: string;
+    id: string;
+  };
+  sustainability_commitment_ceo_image?:
+    | {
+        id: ContentImage;
+        en: ContentImage;
+      }[]
+    | [];
+  sustainability_commitment_ceo_quote?: {
+    en: string;
+    id: string;
+  };
   jam_kerja: string;
   related: ContentType[] | [];
   related2: [];
