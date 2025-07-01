@@ -150,8 +150,6 @@ const Ckeditor5 = forwardRef<CKEditor<ClassicEditor>, Props>((props, ref) => {
             },
           ],
         },
-        enterMode: "paragraph", // Default enter behavior creates paragraphs
-        shiftEnterMode: "lineBreak", // Shift+Enter creates line breaks
         heading: {
           options: [
             { model: "paragraph", title: "Paragraph", class: "" },
