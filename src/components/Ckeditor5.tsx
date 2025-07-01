@@ -38,6 +38,7 @@ import {
   Superscript,
   Underline,
   Heading,
+  ShiftEnter,
 } from "ckeditor5";
 import React, { forwardRef } from "react";
 
@@ -129,6 +130,7 @@ const Ckeditor5 = forwardRef<CKEditor<ClassicEditor>, Props>((props, ref) => {
           Indent,
           IndentBlock,
           Heading,
+          ShiftEnter,
           Image,
           ImageToolbar,
           ImageCaption,
@@ -141,13 +143,15 @@ const Ckeditor5 = forwardRef<CKEditor<ClassicEditor>, Props>((props, ref) => {
         htmlSupport: {
           allow: [
             {
-              name: /^(h1|h2|h3|p)$/, // Allow specific tags
+              name: /^(h1|h2|h3|h4|p|br|strong|em|u|ol|ul|li|span|div)$/, // Allow specific tags including line breaks, formatting, and lists
               attributes: true,
               classes: true,
               styles: true,
             },
           ],
         },
+        enterMode: "paragraph", // Default enter behavior creates paragraphs
+        shiftEnterMode: "lineBreak", // Shift+Enter creates line breaks
         heading: {
           options: [
             { model: "paragraph", title: "Paragraph", class: "" },
