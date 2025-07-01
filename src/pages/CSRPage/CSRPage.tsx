@@ -177,8 +177,8 @@ const formSchema = z.object({
   sustainability_commitment_ceo_image_en: z.string().array().optional().default([]),
   sustainability_commitment_ceo_image_id: z.string().array().optional().default([]),
   sustainability_commitment_ceo_quote: z.object({
-    en: z.string().max(2000).optional(),
-    id: z.string().max(2000).optional(),
+    en: z.string().max(3000).optional(),
+    id: z.string().max(3000).optional(),
   }).optional(),
   active_status: z.boolean().default(true),
   type: z.string().default(CONTENT_TYPE.CSR),
@@ -244,6 +244,40 @@ const CSRPage = () => {
 
   const form = useForm<DataFormValue>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      meta_title: { en: "", id: "" },
+      meta_description: { en: "", id: "" },
+      title: { en: "", id: "" },
+      page_title: { en: "", id: "" },
+      sub_title1: { en: "", id: "" },
+      sub_title2: { en: "", id: "" },
+      sub_title3: { en: "", id: "" },
+      small_text: { en: "", id: "" },
+      bottom_button_name: { en: "", id: "" },
+      banner_en: [],
+      banner_id: [],
+      images_en: [],
+      images_id: [],
+      images2_en: [],
+      images2_id: [],
+      thumbnail_images_en: [],
+      thumbnail_images_id: [],
+      thumbnail_images2_en: [],
+      thumbnail_images2_id: [],
+      body: [],
+      body2: [],
+      body_commitment: [],
+      body_review: [],
+      sustainability_commitment_title: { en: "Sustainability Commitment", id: "Komitmen Keberlanjutan" },
+      sustainability_commitment_ceo_name: { en: "Zibali Hisbul Masih", id: "Zibali Hisbul Masih" },
+      sustainability_commitment_ceo_position: { en: "President Director PT Pertamina Retail", id: "Direktur Utama PT Pertamina Retail" },
+      sustainability_commitment_ceo_image_en: [],
+      sustainability_commitment_ceo_image_id: [],
+      sustainability_commitment_ceo_quote: { en: "", id: "" },
+      active_status: true,
+      type: CONTENT_TYPE.CSR,
+      order: 0,
+    },
   });
 
   //   const {fields, remove, append} = useFieldArray({
@@ -284,6 +318,7 @@ const CSRPage = () => {
   );
 
   const onSubmit = async (data: DataFormValue) => {
+    console.log("Form submitted with data:", data);
     try {
       for (let i = 0; i < data.body.length; i++) {
         const currentValue = data.body[i];
@@ -562,7 +597,15 @@ const CSRPage = () => {
 
       <FormProvider {...form}>
         <form
-          onSubmit={form.handleSubmit(onSubmit)}
+          onSubmit={form.handleSubmit(onSubmit, (errors) => {
+            console.log("Form validation errors:", errors);
+            toast.error(
+              <ToastBody
+                title="Form Validation Error"
+                description="Please check all required fields and fix any errors."
+              />
+            );
+          })}
           className="flex flex-col w-full mt-5 space-y-4"
         >
           <Tabs defaultValue="info">
@@ -1593,7 +1636,6 @@ const CSRPage = () => {
                         <div className="ceo-quote-editor min-h-[300px]">
                           <Ckeditor5
                             onBlur={field.onBlur}
-                            ref={field.ref}
                             placeholder="Enter CEO quote or statement about sustainability commitment..."
                             value={field.value || ""}
                             onChange={(e) => field.onChange(e)}
@@ -1605,7 +1647,7 @@ const CSRPage = () => {
                           </p>
                         ) : null}
                         <div className="text-xs text-gray-500 mt-1">
-                          Maximum 2000 characters. Editor supports formatting like bold, italic, and line breaks.
+                          Maximum 3000 characters. Editor supports formatting like bold, italic, and line breaks.
                         </div>
                       </div>
                     )}
@@ -1624,7 +1666,6 @@ const CSRPage = () => {
                         <div className="ceo-quote-editor min-h-[300px]">
                           <Ckeditor5
                             onBlur={field.onBlur}
-                            ref={field.ref}
                             placeholder="Masukkan kutipan atau pernyataan CEO tentang komitmen keberlanjutan..."
                             value={field.value || ""}
                             onChange={(e) => field.onChange(e)}
@@ -1636,7 +1677,7 @@ const CSRPage = () => {
                           </p>
                         ) : null}
                         <div className="text-xs text-gray-500 mt-1">
-                          Maksimal 2000 karakter. Editor mendukung formatting seperti bold, italic, dan line breaks.
+                          Maksimal 3000 karakter. Editor mendukung formatting seperti bold, italic, dan line breaks.
                         </div>
                       </div>
                     )}
@@ -1861,7 +1902,12 @@ const CSRPage = () => {
               >
                 Back
               </Button>
-              <Button className="w-[100px]" size={"sm"} isLoading={isLoading}>
+              <Button 
+                className="w-[100px]" 
+                size={"sm"} 
+                type="submit"
+                isLoading={isLoading}
+              >
                 Submit
               </Button>
             </div>
