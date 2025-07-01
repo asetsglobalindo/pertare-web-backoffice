@@ -98,8 +98,8 @@ type HomeType = {
 
 const diagramDataSchema = z.object({
   tahun: z.number().min(2000, "Year must be 2000 or later"),
-  kolom1: z.number(),
-  kolom2: z.number().optional(),
+  kolom1: z.number().finite("Value must be a valid number"),
+  kolom2: z.number().finite("Value must be a valid number").optional(),
 });
 
 const formSchema = z.object({
@@ -546,8 +546,8 @@ const HomePage = () => {
             onClick={() =>
               append({
                 tahun: new Date().getFullYear(),
-                kolom1: 0,
-                ...(diagramType === "diagram2" ? { kolom2: 0 } : {}),
+                kolom1: 0.0,
+                ...(diagramType === "diagram2" ? { kolom2: 0.0 } : {}),
               })
             }
           >
@@ -597,10 +597,11 @@ const HomePage = () => {
                   <Input
                     id={field.name}
                     type="number"
+                    step="any"
                     placeholder="Enter value"
                     disabled={isLoading}
                     value={field.value}
-                    onChange={(e) => field.onChange(parseInt(e.target.value))}
+                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                   />
                   {error?.message ? (
                     <p className="text-xs font-medium text-destructive">
@@ -623,10 +624,11 @@ const HomePage = () => {
                     <Input
                       id={field.name}
                       type="number"
+                      step="any"
                       placeholder="Enter value"
                       disabled={isLoading}
                       value={field.value}
-                      onChange={(e) => field.onChange(parseInt(e.target.value))}
+                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                     />
                     {error?.message ? (
                       <p className="text-xs font-medium text-destructive">
