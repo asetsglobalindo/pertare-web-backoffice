@@ -131,16 +131,16 @@ const CSRSocialServices = {
     }
   },
 
-  // Toggle status
+  // Toggle status (khusus untuk switch status)
   toggleStatus: async (id: string, active_status: boolean) => {
     try {
       const data = { active_status };
-      debugRequest('PUT', `/csr-social/admin/${id}`, undefined, data);
-      const response = await ApiService.secure().put(`/csr-social/admin/${id}`, data);
-      debugResponse(`/csr-social/admin/${id}`, response);
+      debugRequest('PATCH', `/csr-social/admin/${id}/status`, undefined, data);
+      const response = await ApiService.secure().patch(`/csr-social/admin/${id}/status`, data);
+      debugResponse(`/csr-social/admin/${id}/status`, response);
       return response;
     } catch (error) {
-      debugError(`/csr-social/admin/${id}`, error);
+      debugError(`/csr-social/admin/${id}/status`, error);
       throw error;
     }
   },
